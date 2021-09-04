@@ -379,6 +379,9 @@ class TCPClient(_Connection):
                 close_socket(self.connection)
 
     def convert_to_tls(self, sni=None, alpn_protos=None, **sslctx_kwargs):
+
+        # Upstream server connection
+
         context = tls.create_client_context(
             alpn_protos=alpn_protos,
             sni=sni,
@@ -391,6 +394,9 @@ class TCPClient(_Connection):
         self.connection.set_connect_state()
         try:
             self.connection.do_handshake()
+            import time
+            time.sleep(30)
+            # Check Wireshark for client hello
         except SSL.Error as v:
             if self.ssl_verification_error:
                 raise self.ssl_verification_error
@@ -496,6 +502,8 @@ class BaseHandler(_Connection):
         Convert connection to SSL.
         For a list of parameters, see tls.create_server_context(...)
         """
+
+        # Browser connection
 
         context = tls.create_server_context(
             cert=cert,
